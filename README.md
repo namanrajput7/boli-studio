@@ -1,65 +1,98 @@
-# BOLI Studio (बोली) — Indigenous Classroom AI Co-Pilot 🎒🗣️
+# BOLI Studio
 
-> **Built at InnoSprint 2.0 (Chandigarh University) • Theme: Build with Antigravity**  
-> *Track: Social Impact & Foundational Education • NEP 2020 Aligned*
+> Offline-first multilingual classroom co-pilot and linguistic translation engine for indigenous languages (**Santali, Kurukh, Ho, Mundari, Sadri**). Built for foundational bilingual education under NEP 2020.
 
----
-
-## 🌟 The Problem: India's Silent Classroom Divide
-
-Under the **National Education Policy (NEP 2020) Section 4.11**, foundational learning up to Grade 5 must be imparted in the child's **mother tongue / home language**.
-
-However, in the tribal heartlands of **Jharkhand, Odisha, West Bengal, and Chhattisgarh**:
-- **88% of government school teachers** are non-tribal and cannot speak, read, or write indigenous languages like **Santali (Ol Chiki), Kurukh, or Ho**.
-- Tribal children speak their home dialect, but textbooks and teachers only speak Hindi, Bengali, or English.
-- Result: **Astronomical primary school dropout rates** in early childhood.
+[![React](https://img.shields.io/badge/React-19.2-blue?style=flat-square&logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8.2-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
+[![Unicode](https://img.shields.io/badge/Unicode-15.0_Ol_Chiki-amber?style=flat-square)](https://unicode.org)
+[![Offline](https://img.shields.io/badge/Edge_Node-Offline_First-10B981?style=flat-square)](https://github.com/namanrajput7/boli-studio)
+[![License](https://img.shields.io/badge/License-Apache_2.0-slate?style=flat-square)](LICENSE)
 
 ---
 
-## ⚡ The Solution: BOLI Studio
+## 1. Problem Definition & Architectural Scope
 
-**BOLI Studio** is an offline-ready, real-time multimodal classroom co-pilot built using Google Antigravity. It enables non-tribal teachers to seamlessly deliver bilingual lessons without needing to be fluent in tribal dialects.
+In tribal regions across Jharkhand, Odisha, West Bengal, and Chhattisgarh, foundational education (Grades 1–5) faces a structural medium-of-instruction bottleneck:
 
-### Core Capabilities:
-1. **Teacher Transmutation Engine**:
-   - Teachers type or dictate concepts in Hindi or English (e.g. *"Colors of nature"* or *"Counting 1 to 5"*).
-   - Generates authentic native script (including official **Unicode 15.0 Ol Chiki** for Santali).
-   - Provides both **Devanagari and Phonetic English transliterations** so any teacher can read and pronounce it accurately.
+* **Instructional Mismatch:** Over 85% of primary educators appointed to government and Eklavya Model Residential Schools (EMRS) do not speak or read local indigenous dialects.
+* **Cognitive Load:** First-generation tribal learners speak their home languages at home, leading to high comprehension loss and dropout rates when instructional materials are exclusively delivered in standard Hindi or English.
+* **Connectivity Constraints:** Rural schools in remote forest belts frequently operate with zero or intermittent cellular coverage, ruling out cloud-dependent API architectures.
 
-2. **Resilient Native Audio Synthesizer**:
-   - Offline-capable pedagogical cadence synthesizer designed for primary school classrooms.
-   - Zero dependence on expensive third-party cloud speech APIs.
-
-3. **Gamified Student Arena**:
-   - High-contrast visual flashcards.
-   - Interactive bilingual quiz widget with celebratory audio chimes and confetti animations.
-
-4. **Village Node (Offline-First Architecture)**:
-   - Remote tribal villages often have zero 4G connectivity.
-   - BOLI Studio bundles verified curriculum modules locally in client-side storage, ensuring 100% functionality without internet.
+**BOLI Studio** addresses this by providing an offline-resilient, pedagogical lesson preparation workbench that adapts standard curriculum inputs into authentic indigenous scripts, phonetic reading guides, synthesized audio, interactive flashcards, and printable worksheets.
 
 ---
 
-## 🏛️ Policy & District Alignment
-- **Curriculum:** SCERT Jharkhand & Odisha Multilingual Education (MLE) Framework.
-- **Coverage Focus:** NITI Aayog Aspirational Districts (*Dumka, Ranchi, Mayurbhanj, West Singhbhum, Bastar*).
-- **Target Institutions:** Eklavya Model Residential Schools (EMRS) & Ashram Shalas.
+## 2. System Architecture
+
+```
+                       [Curriculum Input]
+              (Textbook Sample / Manual / OCR / ASR)
+                                │
+                                ▼
+                     ┌─────────────────────┐
+                     │ BOLI Studio Engine  │
+                     └──────────┬──────────┘
+                                │
+       ┌────────────────────────┴────────────────────────┐
+       ▼                                                 ▼
+[Live Model Pipeline]                           [Village Edge Node]
+(FastAPI Server :8001)                          (Client-Side Offline Engine)
+├── AI4Bharat IndicTrans2 (sat_Olck)            ├── Verified Curriculum Lexicon
+├── Fine-tuned mT5 (kru_Deva)                   ├── Unicode 15.0 Script Validator
+├── Linguistic Transfer Core (hoc, unr, sck)    ├── Syllable & Phonetic Decompiler
+└── Meta MMS-TTS & Speech Engine                └── Synthetic Web Audio Oscillator
+       │                                                 │
+       └────────────────────────┬────────────────────────┘
+                                │
+                                ▼
+                     [Classroom Presentation]
+       ├── Interactive Multimodal Studio Canvas
+       ├── Syllable-by-Syllable Pronunciation Inspector
+       ├── Gamified Bilingual Practice Quiz (QuizLab)
+       └── Exportable A4 Printable Worksheets with QR Codes
+```
 
 ---
 
-## 🛠️ Tech Stack
-- **Frontend:** React 19, Tailwind CSS, Lucide Icons, Canvas Confetti.
-- **Fonts & Typography:** Google Noto Sans Ol Chiki, Plus Jakarta Sans, Fredoka.
-- **Audio Engine:** Web Audio API & Web Speech Synthesis.
-- **Orchestration:** Built with Google Antigravity Agent Studio.
+## 3. Supported Dialects & Engine Matrix
+
+| Language | ISO Code | Native Script | Primary Script Engine | Spoken Synthesis Fallback |
+| :--- | :--- | :--- | :--- | :--- |
+| **Santali** | `sat` | ᱥᱟᱱᱛᱟᱲᱤ | Ol Chiki (`sat_Olck`) Unicode 15.0 | AI4Bharat Indic Parler / Web Audio |
+| **Kurukh** | `kru` | कुड़ुख़ | Tolong Siki & Devanagari (`kru_Deva`) | Meta MMS-TTS (`mms-tts-kru`) |
+| **Ho** | `hoc` | ᱣᱟᱨᱟᱝ ᱪᱤᱛᱤ | Warang Chiti / Devanagari (`hoc_Deva`) | Meta MMS-TTS (`mms-tts-hoc`) |
+| **Mundari** | `unr` | मुंडारी | Devanagari (`unr_Deva`) | Meta MMS-TTS (`mms-tts-unr`) |
+| **Sadri** | `sck` | सादरी | Devanagari (`sck_Deva`) | Morphological Transfer / Web Audio |
 
 ---
 
-## 🚀 Running Locally
+## 4. Technical Capabilities
+
+### Pedagogical Transmutation
+* **Unicode Script Enforcement:** Native rendering of Ol Chiki characters via Google Noto Sans Ol Chiki.
+* **Dual Transliteration:** Generates parallel Devanagari and Latin phonetic annotations to allow non-native instructors to read aloud correctly.
+* **Syllable Decompiler:** Isolates individual consonants, vowels, and glottal stops with targeted audio playback.
+
+### Zero-Cloud Village Cache
+* The client implements an automated offline resilience layer (`src/services/api.js`). If upstream API endpoints are unreachable, execution routes through the pre-indexed regional vocabulary matrix without throwing unhandled exceptions or breaking the interface.
+
+### Classroom Artifact Generation
+* **Physical Worksheets:** Generates high-contrast, printable A4 lesson sheets with character tracing lines and vocabulary mapping for schools without digital displays.
+* **Interactive Evaluation:** Client-side bilingual quiz modules with real-time feedback loops.
+
+---
+
+## 5. Local Setup & Development
+
+### Prerequisites
+* Node.js `>= 18.0.0`
+* npm `>= 9.0.0`
+
+### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/boli-studio.git
+git clone https://github.com/namanrajput7/boli-studio.git
 
 # Enter project directory
 cd boli-studio
@@ -67,9 +100,32 @@ cd boli-studio
 # Install dependencies
 npm install
 
-# Start development server
+# Start local development server
 npm run dev
 ```
 
+The application will be served at `http://127.0.0.1:5173`.
+
+### Production Build
+
+```bash
+# Compile and optimize assets
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
 ---
-*Created with ❤️ by Naman Singh Panwar for InnoSprint 2.0.*
+
+## 6. Policy Alignment & Compliance
+
+* **NEP 2020 § 4.11:** Adheres to foundational mother-tongue / regional-language instruction mandates for early childhood education.
+* **SCERT Framework:** Mapped to multilingual education (MLE) standards in Jharkhand, Odisha, and Chhattisgarh.
+* **Aspirational Districts:** Targeted for low-resource deployments across Dumka, Ranchi, Mayurbhanj, West Singhbhum, and Bastar.
+
+---
+
+## 7. License
+
+Distributed under the Apache 2.0 License. See `LICENSE` for details.
