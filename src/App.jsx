@@ -9,6 +9,8 @@ import GlobalFooter from "./components/GlobalFooter";
 import ForestBackground from "./components/ForestBackground";
 import LiveClassroom from "./components/LiveClassroom";
 import Flashcards from "./components/Flashcards";
+import { MonsoonNavbar } from "./components/layout/MonsoonNavbar";
+import { MonsoonHero } from "./components/layout/MonsoonHero";
 
 const STEPS = [
   { num: 1, label: "Capture Lesson" },
@@ -70,6 +72,7 @@ function Stepper({ step, onSelectStep, canGoToStep }) {
 export default function App() {
   const [activeTab, setActiveTab] = useState("studio"); // "studio" | "live" | "flashcards" | "languages" | "how-it-works"
   const [activeLang, setActiveLang] = useState("hi");
+  const [isOffline, setIsOffline] = useState(false);
   const [step, setStep] = useState(0);
   const [hindiText, setHindiText] = useState("");
   const [grade, setGrade] = useState(2);
@@ -77,6 +80,7 @@ export default function App() {
   const [sourceType, setSourceType] = useState("typed");
   const [selectedLangs, setSelectedLangs] = useState([]);
   const mainRef = useRef(null);
+  const studioRef = useRef(null);
 
   function canGoToStep(targetStep) {
     if (targetStep <= step) return true;
@@ -91,14 +95,18 @@ export default function App() {
     setStep(nextStep);
     requestAnimationFrame(() => {
       mainRef.current?.focus();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      studioRef.current?.scrollIntoView({ behavior: "smooth" });
     });
   }
 
   const next = () => go(Math.min(step + 1, 2));
   const back = () => go(Math.max(step - 1, 0));
 
-  // Audio chime for teacher to verify classroom bluetooth or wired speakers
+  const scrollToStudio = () => {
+    setActiveTab("studio");
+    studioRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   function playSpeakerChime() {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -126,171 +134,202 @@ export default function App() {
 
   return (
     <>
-      <ForestBackground />
-      {/* Top Utility Bar (Accessibility & Navigation) */}
-      <TopUtilityBar activeLang={activeLang} onToggleLang={setActiveLang} />
+      {/* Floating Frosted Pill Navbar (Monsoon Inspired) */}
+      <MonsoonNavbar
+        activeView={activeTab}
+        setActiveView={(view) => {
+          if (view === "dialects" || view === "policy") {
+            setActiveTab("languages");
+          } else {
+            setActiveTab(view);
+          }
+          studioRef.current?.scrollIntoView({ behavior: "smooth" });
+        }}
+        isOffline={isOffline}
+        setIsOffline={setIsOffline}
+        onLaunchStudio={scrollToStudio}
+      />
 
-      <div className="app-shell">
-        <a className="skip-link" href="#main-content">
-          Skip to content
+      {/* Hero Section with Live Background Video */}
+      <MonsoonHero
+        onLaunchStudio={scrollToStudio}
+        onExploreDialects={() => {
+          setActiveTab("languages");
+          studioRef.current?.scrollIntoView({ behavior: "smooth" });
+        }}
+      />
+
+      {/* Atmospheric Forest Background for Studio Canvas */}
+      <ForestBackground />
+
+      <div className="app-shell" ref={studioRef} id="studio-workspace">
+        <a href="#main-content" className="sr-only">
+          Skip to main content
         </a>
 
-        {/* Main Header */}
-        <header className="app-header-bar sun-card-shadow">
-        <div className="header-brand">
-          <Logo size="small" showTagline={true} />
-        </div>
-
-        {/* Global Navigation Tabs */}
-        <nav className="header-nav-tabs" aria-label="Primary Platform Navigation">
-          <div className="nav-tabs-primary">
-            <button
-              type="button"
-              className={`nav-tab-link ${activeTab === "studio" ? "is-active" : ""}`}
-              onClick={() => {
-                setActiveTab("studio");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <span className="material-symbols-outlined text-sm">auto_stories</span>
-              <span>Studio (शिक्षण)</span>
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-link ${activeTab === "live" ? "is-active" : ""}`}
-              onClick={() => {
-                setActiveTab("live");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <span className="material-symbols-outlined text-sm">mic</span>
-              <span>Live Classroom (मौखिक)</span>
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-link ${activeTab === "quiz" ? "is-active" : ""}`}
-              onClick={() => {
-                setActiveTab("quiz");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <span className="material-symbols-outlined text-sm">quiz</span>
-              <span>Practice Quiz (परख)</span>
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-link ${activeTab === "flashcards" ? "is-active" : ""}`}
-              onClick={() => {
-                setActiveTab("flashcards");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <span className="material-symbols-outlined text-sm">style</span>
-              <span>Flashcards (पत्ती)</span>
-            </button>
+        {/* Studio Control Header */}
+        <header className="app-header">
+          <div className="header-brand">
+            <Logo size={42} showText={true} />
+            <div className="header-badges">
+              <span className="badge-live" aria-label="Status: Live Model Active">
+                <span className="status-dot"></span>
+                <span>NEP 2020 §4.11</span>
+              </span>
+              <span className="badge-region" title="Jurisdiction: Jharkhand, Odisha, West Bengal tribal belts">
+                JH / OD Tribal Belts
+              </span>
+            </div>
           </div>
-        </nav>
 
-        {/* Stepper only when in studio mode */}
-        {activeTab === "studio" && (
-          <div className="header-stepper">
-            <Stepper step={step} onSelectStep={go} canGoToStep={canGoToStep} />
+          <nav className="header-nav" aria-label="Main application sections">
+            <div className="nav-tabs" role="tablist">
+              <button
+                type="button"
+                className={`nav-tab-link ${activeTab === "studio" ? "is-active" : ""}`}
+                onClick={() => {
+                  setActiveTab("studio");
+                  scrollToStudio();
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">auto_stories</span>
+                <span>Lesson Studio</span>
+              </button>
+              <button
+                type="button"
+                className={`nav-tab-link ${activeTab === "live" ? "is-active" : ""}`}
+                onClick={() => {
+                  setActiveTab("live");
+                  scrollToStudio();
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">mic</span>
+                <span>Live Classroom</span>
+              </button>
+              <button
+                type="button"
+                className={`nav-tab-link ${activeTab === "quiz" ? "is-active" : ""}`}
+                onClick={() => {
+                  setActiveTab("quiz");
+                  scrollToStudio();
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">quiz</span>
+                <span>Practice Quiz</span>
+              </button>
+              <button
+                type="button"
+                className={`nav-tab-link ${activeTab === "flashcards" ? "is-active" : ""}`}
+                onClick={() => {
+                  setActiveTab("flashcards");
+                  scrollToStudio();
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">style</span>
+                <span>Flashcards</span>
+              </button>
+            </div>
+          </nav>
+
+          {activeTab === "studio" && (
+            <div className="header-stepper">
+              <Stepper step={step} onSelectStep={go} canGoToStep={canGoToStep} />
+            </div>
+          )}
+
+          <div className="header-meta">
+            <div className="header-utility-group">
+              <button
+                type="button"
+                className="header-util-btn"
+                onClick={playSpeakerChime}
+                title="Classroom Speaker Test"
+                aria-label="Classroom Speaker Test — Play test chime"
+              >
+                <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>volume_up</span>
+                <span className="util-btn-text">Speaker Test</span>
+              </button>
+              <button
+                type="button"
+                className="header-util-btn"
+                onClick={() => {
+                  setHindiText("");
+                  setChapterSentences([]);
+                  setActiveTab("studio");
+                  go(0);
+                }}
+                title="Start New Lesson"
+                aria-label="Start New Lesson"
+              >
+                <span className="material-symbols-outlined text-sm">restart_alt</span>
+                <span className="util-btn-text">New Lesson</span>
+              </button>
+            </div>
           </div>
-        )}
+        </header>
 
-        <div className="header-meta">
-          <div className="header-utility-group">
-            <button
-              type="button"
-              className="header-util-btn"
-              onClick={playSpeakerChime}
-              title="Classroom Speaker Test (Plays chime on classroom bluetooth or wired audio)"
-              aria-label="Classroom Speaker Test — Play test chime"
-            >
-              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>volume_up</span>
-              <span className="util-btn-text">Speaker Test</span>
-            </button>
-            <button
-              type="button"
-              className="header-util-btn"
-              onClick={() => {
-                setHindiText("");
+        {/* Main Workspace Area */}
+        <main id="main-content" ref={mainRef} tabIndex={-1}>
+          {activeTab === "studio" && (
+            <div id="studio-section">
+              {step === 0 && (
+                <Capture
+                  hindiText={hindiText}
+                  setHindiText={setHindiText}
+                  grade={grade}
+                  setGrade={setGrade}
+                  chapterSentences={chapterSentences}
+                  setChapterSentences={setChapterSentences}
+                  setSourceType={setSourceType}
+                  onNext={next}
+                />
+              )}
+              {step === 1 && (
+                <LanguageSelect
+                  selectedLangs={selectedLangs}
+                  setSelectedLangs={setSelectedLangs}
+                  onBack={back}
+                  onNext={next}
+                />
+              )}
+              {step === 2 && (
+                <Result
+                  hindiText={hindiText}
+                  grade={grade}
+                  chapterSentences={chapterSentences}
+                  sourceType={sourceType}
+                  selectedLangs={selectedLangs}
+                  onBack={back}
+                  onNavigateTab={(tab) => setActiveTab(tab)}
+                />
+              )}
+            </div>
+          )}
+
+          {activeTab === "live" && (
+            <LiveClassroom
+              onLoadIntoStudio={(text) => {
+                setHindiText(text);
                 setChapterSentences([]);
                 setActiveTab("studio");
                 go(0);
               }}
-              title="Start New Lesson (Resets input and returns to Step 1)"
-              aria-label="Start New Lesson — Reset input and return to Step 1"
-            >
-              <span className="material-symbols-outlined text-sm">restart_alt</span>
-              <span className="util-btn-text">New Lesson</span>
-            </button>
-          </div>
-        </div>
-      </header>
+              currentGrade={grade}
+            />
+          )}
 
-      {/* Main Workspace Area */}
-      <main id="main-content" ref={mainRef} tabIndex={-1}>
-        {activeTab === "studio" && (
-          <div id="studio-section">
-            {step === 0 && (
-              <Capture
-                hindiText={hindiText}
-                setHindiText={setHindiText}
-                grade={grade}
-                setGrade={setGrade}
-                chapterSentences={chapterSentences}
-                setChapterSentences={setChapterSentences}
-                setSourceType={setSourceType}
-                onNext={next}
-              />
-            )}
-            {step === 1 && (
-              <LanguageSelect
-                selectedLangs={selectedLangs}
-                setSelectedLangs={setSelectedLangs}
-                onBack={back}
-                onNext={next}
-              />
-            )}
-            {step === 2 && (
-              <Result
-                hindiText={hindiText}
-                grade={grade}
-                chapterSentences={chapterSentences}
-                sourceType={sourceType}
-                selectedLangs={selectedLangs}
-                onBack={back}
-                onNavigateTab={(tab) => setActiveTab(tab)}
-              />
-            )}
-          </div>
-        )}
+          {activeTab === "flashcards" && (
+            <Flashcards lessonText={hindiText} currentGrade={grade} />
+          )}
 
-        {activeTab === "live" && (
-          <LiveClassroom
-            onLoadIntoStudio={(text) => {
-              setHindiText(text);
-              setChapterSentences([]);
-              setActiveTab("studio");
-              go(0);
-            }}
-            currentGrade={grade}
-          />
-        )}
+          {activeTab === "quiz" && (
+            <QuizLab lessonText={hindiText} currentGrade={grade} />
+          )}
+        </main>
 
-        {activeTab === "flashcards" && (
-          <Flashcards lessonText={hindiText} currentGrade={grade} />
-        )}
-
-        {activeTab === "quiz" && (
-          <QuizLab lessonText={hindiText} currentGrade={grade} />
-        )}
-      </main>
-
-      {/* Footer */}
-      <GlobalFooter />
-    </div>
+        {/* Global Footer */}
+        <GlobalFooter />
+      </div>
     </>
   );
 }
