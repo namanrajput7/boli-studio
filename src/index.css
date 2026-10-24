@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  
+  .font-olchiki {
+    font-family: 'Noto Sans Ol Chiki', sans-serif;
+  }
+
+  .font-kids {
+    font-family: 'Fredoka', cursive, sans-serif;
+  }
+}
+
+/* Custom animated gradient glow */
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.05); }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 8s ease-in-out infinite;
+}
